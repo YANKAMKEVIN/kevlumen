@@ -24,7 +24,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webki
 .ib svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ttl{flex:1;text-align:center;line-height:1.15;pointer-events:none}
 .ttl b{display:block;font:600 22px/1.1 "Cormorant Garamond",serif;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:440px){.ttl b{font-size:19px}.ib{width:38px;height:38px;border-radius:12px}.grp,.hud{gap:6px}}
+@media (max-width:440px){.ttl span{white-space:nowrap}.ttl b{font-size:19px}.ib{width:38px;height:38px;border-radius:12px}.grp,.hud{gap:6px}}
 .ttl span{font-size:12px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase}
 .grp{display:flex;gap:8px}
 #tip{position:fixed;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 58px);max-width:min(560px,calc(100vw - 24px));padding:9px 16px;border-radius:14px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:14px;color:var(--ink);text-align:center;z-index:4;transition:opacity .5s;pointer-events:none}
@@ -201,10 +201,12 @@ const parts=[],motes=[];
 let bgCv=document.createElement('canvas');
 let T=0;
 
+// « depuis le bas » n'est vrai que si la réserve est en bas (sinon elle est à droite)
+function hintText(){const h=(L&&L.hint)||'';return VW>VH*1.2?h.replace('depuis le bas','depuis la droite'):h}
 function resize(){
   DPR=Math.min(window.devicePixelRatio||1,2);VW=innerWidth;VH=innerHeight;
   cv.width=VW*DPR;cv.height=VH*DPR;
-  makeBg(); if(L) layout();
+  makeBg(); if(L){if(mode==='play'&&!won)$('tip').textContent=hintText();layout();}
 }
 function makeBg(){
   bgCv.width=cv.width;bgCv.height=cv.height;const b=bgCv.getContext('2d');const w=bgCv.width,h=bgCv.height;
@@ -218,7 +220,9 @@ function makeBg(){
 for(let i=0;i<46;i++)motes.push({x:Math.random(),y:Math.random(),v:.004+Math.random()*.01,r:Math.random()*1.6+.4,p:Math.random()*TAU,c:[1,2,4,7,6,5][i%6]});
 
 function layout(){
-  const top=72+(($('tip').textContent)?40:0), pad=14;
+  // le plateau commence sous la barre du haut et sous la bulle d'aide (qui peut faire 2-3 lignes sur téléphone)
+  const hudB=$('hud').getBoundingClientRect().bottom, tipB=$('tip').textContent?$('tip').getBoundingClientRect().bottom:0;
+  const top=Math.max(72,Math.ceil(hudB)+6,Math.ceil(tipB)+10), pad=14;
   const vert=VW>VH*1.2; const tw=vert?110:VW, th=vert?VH:112;
   let aw=VW-pad*2-(vert?tw:0), ah=VH-top-pad-(vert?0:th);
   let cs=Math.floor(Math.min(aw/L.w,ah/L.h,104));
@@ -248,7 +252,7 @@ function loadLevel(i){
   tray=[...m.values()];
   hist=[];moves=0;hintsUsed=0;won=false;hint=null;drag=null;pid=null;hoverCell=-1;litState=new Map();
   $('lvNum').textContent='Niveau '+(i+1);$('lvName').textContent=L.name;
-  const tip=$('tip');tip.textContent=L.hint||'';tip.style.opacity=1;
+  const tip=$('tip');tip.textContent=hintText();tip.style.opacity=1;
   layout();
   tr=null;recompute(true);
 }
