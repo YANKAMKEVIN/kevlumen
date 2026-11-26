@@ -34,3 +34,13 @@ Les outils qui ont servi à fabriquer le jeu :
 - `gen.js` et `build.js` : le générateur de niveaux et le solveur qui vérifie que chaque niveau a une solution.
 - `levels.json` : les 30 niveaux.
 - `mk.py` : assemble `gabarit.html`, `sim.js` et `levels.json` dans un seul `index.html`.
+
+## Tests
+Un test de fumée joue le jeu tout seul sur ordinateur, iPhone SE et Pixel 7 couché (Chromium) : il échoue sur toute erreur console, un bouton hors de l'écran impossible à atteindre, une page qui déborde ou une chute d'images/s.
+
+```bash
+npm install
+npx playwright install chromium
+npm test            # captures dans test-results/
+```
+Réglages propres au jeu : `tests/smoke.config.mjs`. La CI GitHub (`.github/workflows/tests.yml`) le lance sur chaque PR.
