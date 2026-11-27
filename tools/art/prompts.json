@@ -1,0 +1,20 @@
+{
+  "style": "Peinture numérique onirique et lumineuse, façon jeu de réflexion indé primé : nuit profonde violette et bleu encre, cristaux qui brillent, rayons de lumière colorés (rouge, vert, bleu, et leurs mélanges), particules, profondeur atmosphérique. Aucun texte, aucun logo, aucune lettre, aucune signature, aucun filigrane.",
+  "fond_detourage": "",
+  "images": [
+    {"fichier": "titre", "taille": "1920x1080", "detourer": false,
+     "prompt": "Affiche d'ouverture du jeu « KevLumen » : une grotte de cristaux sous un ciel étoilé, trois rayons de lumière rouge, vert et bleu ricochent sur des miroirs suspendus et se rejoignent en lumière blanche sur un grand cristal central qui s'éveille. Garder le tiers haut central calme pour poser le titre."},
+    {"fichier": "fond_reflets", "taille": "1920x1080", "detourer": false,
+     "prompt": "Arrière-plan de jeu pour le chapitre « Reflets » : lac nocturne immobile qui reflète un ciel étoilé violet, quelques éclats de miroirs flottants sur les bords. Centre de l'image sombre, calme et peu détaillé (un plateau de jeu sera posé dessus), détails et lumières uniquement sur les bords."},
+    {"fichier": "fond_separateurs", "taille": "1920x1080", "detourer": false,
+     "prompt": "Arrière-plan de jeu pour le chapitre « Séparateurs » : forêt de verre bleu nuit, troncs translucides qui dédoublent des filets de lumière. Centre de l'image sombre, calme et peu détaillé (un plateau de jeu sera posé dessus), détails et lumières uniquement sur les bords."},
+    {"fichier": "fond_filtres", "taille": "1920x1080", "detourer": false,
+     "prompt": "Arrière-plan de jeu pour le chapitre « Filtres » : cathédrale abandonnée la nuit, grands vitraux colorés rouge, vert et bleu qui filtrent la lune. Centre de l'image sombre, calme et peu détaillé (un plateau de jeu sera posé dessus), détails et lumières uniquement sur les bords."},
+    {"fichier": "fond_prismes", "taille": "1920x1080", "detourer": false,
+     "prompt": "Arrière-plan de jeu pour le chapitre « Prismes » : sommets de montagne gelés sous une nuit claire, prismes de glace géants qui décomposent la lumière en arcs-en-ciel discrets. Centre de l'image sombre, calme et peu détaillé (un plateau de jeu sera posé dessus), détails et lumières uniquement sur les bords."},
+    {"fichier": "fond_ombres", "taille": "1920x1080", "detourer": false,
+     "prompt": "Arrière-plan de jeu pour le chapitre « Ombres » : ruines englouties dans une brume d'encre presque noire, quelques braises de lumière colorée qui résistent à l'obscurité. Centre de l'image très sombre, calme et peu détaillé (un plateau de jeu sera posé dessus), détails uniquement sur les bords."},
+    {"fichier": "fond_aurore", "taille": "1920x1080", "detourer": false,
+     "prompt": "Arrière-plan de jeu pour le chapitre « Aurore » : toundra la nuit sous une immense aurore boréale verte, rose et bleue, cristaux qui scintillent au sol. Centre de l'image sombre, calme et peu détaillé (un plateau de jeu sera posé dessus), détails et lumières surtout sur les bords et en haut."}
+  ]
+}

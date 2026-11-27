@@ -15,6 +15,9 @@ En local, le jeu est en modules ES : il faut un petit serveur (un double-clic su
 npm start          # puis ouvrir http://localhost:8000
 ```
 
+## Visuels
+L'affiche de l'écran titre et le fond de chacun des 6 chapitres sont peints avec Codex (`art/`, WebP). Les prompts sont dans `tools/art/prompts.json` ; `tools/art/generer.sh` les génère et `tools/art/finir.py` les recadre et les exporte. Le centre des fonds reste sombre pour laisser le plateau lisible. Sans eux, le fond procédural d'origine prend le relais (`src/art.js`).
+
 ## Règles
 
 - **Source** : émet un rayon coloré.
