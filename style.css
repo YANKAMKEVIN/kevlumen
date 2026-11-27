@@ -56,3 +56,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webki
 .row div{font-size:14px;color:var(--dim)}
 .row b{color:var(--ink);font-weight:500}
 .card .btn{display:block;margin:14px auto 4px}
+
+/* Affiche peinte (Codex) derrière l'écran titre */
+#title{background:radial-gradient(ellipse at 50% 40%,#0a081800,#0a0818cc 75%),linear-gradient(#0a081855,#0a0818aa),url(art/titre.webp) center/cover no-repeat}

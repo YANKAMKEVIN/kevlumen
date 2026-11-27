@@ -7,6 +7,8 @@ import { etat } from './state.js';
 import { cxy, hintText, layout } from './layout.js';
 import { angFor } from './game.js';
 import { onWin } from './ui.js';
+import { CHAPTERS } from './levels.js';
+import { art, CHAPTER_ART } from './art.js';
 
 // ---------- canvas & state ----------
 /** @type {HTMLCanvasElement} */
@@ -19,8 +21,15 @@ export function resize(){
   cv.width=etat.VW*etat.DPR;cv.height=etat.VH*etat.DPR;
   makeBg(); if(etat.L){if(etat.mode==='play'&&!etat.won)$('tip').textContent=hintText();layout();}
 }
+/** Chapitre du niveau courant (0 avant le premier niveau). */
+function chapterNow(){const i=CHAPTERS.findIndex(c=>etat.LI>=c[1]&&etat.LI<c[2]);return i<0?0:i}
+/** Chapitre dont le fond est dessiné dans bgCv (-1 : fond procédural). */
+let bgChapter=-2;
 function makeBg(){
   bgCv.width=cv.width;bgCv.height=cv.height;const b=/** @type {CanvasRenderingContext2D} */ (bgCv.getContext('2d'));const w=bgCv.width,h=bgCv.height;
+  const ch=chapterNow(),im=art(CHAPTER_ART[ch]);bgChapter=im?ch:-1;
+  if(im){const sc=Math.max(w/im.width,h/im.height),iw=im.width*sc,ih=im.height*sc;b.drawImage(im,(w-iw)/2,(h-ih)/2,iw,ih);
+    const v=b.createRadialGradient(w/2,h/2,Math.min(w,h)*.25,w/2,h/2,Math.max(w,h)*.8);v.addColorStop(0,'rgba(5,4,11,.35)');v.addColorStop(1,'rgba(5,4,11,.6)');b.fillStyle=v;b.fillRect(0,0,w,h);return}
   const g=b.createLinearGradient(0,0,0,h);g.addColorStop(0,'#0a0818');g.addColorStop(1,'#05040b');b.fillStyle=g;b.fillRect(0,0,w,h);
   /** @type {[number,number,string][]} */
   const blobs=[[.18,.22,'rgba(120,60,200,.20)'],[.85,.15,'rgba(40,90,200,.16)'],[.7,.85,'rgba(200,50,140,.12)'],[.1,.8,'rgba(40,160,170,.10)'],[.5,.5,'rgba(90,70,180,.08)']];
@@ -171,6 +180,7 @@ const clock={l:0};
 export function frame(now){
   const dt=Math.min(.05,(now-(clock.l||now))/1000);clock.l=now;etat.T+=dt;
   ctx.setTransform(etat.DPR,0,0,etat.DPR,0,0);
+  if(bgChapter!==(art(CHAPTER_ART[chapterNow()])?chapterNow():-1))makeBg();
   ctx.drawImage(bgCv,0,0,etat.VW,etat.VH);
   // motes
   ctx.save();ctx.globalCompositeOperation='lighter';

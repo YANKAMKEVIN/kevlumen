@@ -58,6 +58,10 @@ try {
 
   await page.goto(URL);
   check(/^v\d+\.\d+\.\d+$/.test(await page.locator('#ver').innerText()), 'numéro de version sur l\'écran titre');
+  await page.waitForFunction(() => window.__klArt !== undefined, null, { timeout: 15000 });
+  check(await page.evaluate(() => window.__klArt) === 7, 'les 7 visuels peints sont chargés');
+  check((await page.locator('#title').evaluate(el => getComputedStyle(el).backgroundImage)).includes('titre.webp'), 'affiche peinte derrière l\'écran titre');
+  await page.screenshot({ path: `${OUT}/partie-0-titre.png` });
   await page.click('#bPlay');
   await page.waitForFunction(() => __kl.L && __kl.lay.slots.length > 0);
   const t0 = Date.now(); const ratés = [];
@@ -71,6 +75,7 @@ try {
     if (i === 1) check(stars === 2, `niveau 2 avec un indice : 2 étoiles (${stars})`);
     else if (stars !== 3) ratés.push(`${i + 1} (${stars} étoiles)`);
     if (i === 0) await page.screenshot({ path: `${OUT}/partie-1-victoire.png` });
+    if (i === 23) await page.screenshot({ path: `${OUT}/partie-1b-aurore.png` });
     if (i === 29) { check((await page.locator('#winI').innerText()).includes('terminé'), 'dernier niveau : message de fin'); await page.screenshot({ path: `${OUT}/partie-2-fin.png` }); break; }
     await page.click('#bNext');
     await page.waitForFunction(n => __kl.L && __kl.L.name !== n, lv);
