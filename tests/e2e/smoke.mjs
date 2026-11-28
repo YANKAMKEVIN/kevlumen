@@ -10,7 +10,7 @@ import cfg from './smoke.config.mjs';
 
 // port libre choisi par le système (plusieurs jeux peuvent tourner en même temps)
 const PORT = await new Promise(res => { const s = createServer().listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
-const BASE = `http://127.0.0.1:${PORT}/${cfg.page || 'index.html'}`;
+const BASE = `http://127.0.0.1:${PORT}/kevlumen/${cfg.page || 'index.html'}`;
 const SHOTS = process.env.SMOKE_SHOTS || 'test-results';
 const PLAY_MS = Number(process.env.SMOKE_PLAY_MS || cfg.playMs || 20000);
 const PROFILES = [
@@ -20,7 +20,7 @@ const PROFILES = [
 ];
 const only = process.env.SMOKE_ONLY;
 
-const server = spawn('python3', ['-m', 'http.server', String(PORT), '--bind', '127.0.0.1'], { stdio: 'ignore' });
+const server = spawn(process.execPath, ['tools/serve.mjs', 'dist'], { stdio: 'ignore', env: { ...process.env, PORT: String(PORT), BASE_PATH: '/kevlumen/' } });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const failures = [];
 const fail = (p, msg) => { failures.push(`[${p}] ${msg}`); console.log(`  ÉCHEC ${msg}`); };

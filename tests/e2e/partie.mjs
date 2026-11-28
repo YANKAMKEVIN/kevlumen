@@ -9,11 +9,12 @@ import { createServer, connect } from 'node:net';
 import { mkdirSync } from 'node:fs';
 
 const PORT = await new Promise(res => { const s = createServer().listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
-const URL = `http://127.0.0.1:${PORT}/index.html`;
+// servi sous /kevlumen/ comme sur GitHub Pages : vérifie que les chemins relatifs du build tiennent
+const URL = `http://127.0.0.1:${PORT}/kevlumen/index.html`;
 const OUT = process.env.SMOKE_SHOTS || 'test-results';
 const KEY = 'kevlumen.sauvegarde';
 mkdirSync(OUT, { recursive: true });
-const server = spawn('python3', ['-m', 'http.server', String(PORT), '--bind', '127.0.0.1'], { stdio: 'ignore' });
+const server = spawn(process.execPath, ['tools/serve.mjs', 'dist'], { stdio: 'ignore', env: { ...process.env, PORT: String(PORT), BASE_PATH: '/kevlumen/' } });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 for (let i = 0; i < 100; i++) {
   const ok = await new Promise(res => { const c = connect(PORT, '127.0.0.1', () => { c.end(); res(true); }); c.on('error', () => res(false)); });
@@ -60,7 +61,7 @@ try {
   check(/^v\d+\.\d+\.\d+$/.test(await page.locator('#ver').innerText()), 'numéro de version sur l\'écran titre');
   await page.waitForFunction(() => window.__klArt !== undefined, null, { timeout: 15000 });
   check(await page.evaluate(() => window.__klArt) === 7, 'les 7 visuels peints sont chargés');
-  check((await page.locator('#title').evaluate(el => getComputedStyle(el).backgroundImage)).includes('titre.webp'), 'affiche peinte derrière l\'écran titre');
+  check((await page.locator('#title').evaluate(el => getComputedStyle(el).backgroundImage)).match(/titre[-\w]*\.webp/) !== null, 'affiche peinte derrière l\'écran titre');
   await page.screenshot({ path: `${OUT}/partie-0-titre.png` });
   await page.click('#bPlay');
   await page.waitForFunction(() => __kl.L && __kl.lay.slots.length > 0);
@@ -82,7 +83,7 @@ try {
   }
   check(ratés.length === 0, `30 niveaux résolus au glisser-déposer, 3 étoiles sans indice (${Math.round((Date.now() - t0) / 1000)} s)${ratés.length ? ' ; ratés : ' + ratés.join(', ') : ''}`);
   let d = await save();
-  check(d?.version === 1, 'sauvegarde écrite, version 1');
+  check(d?.version === 2 && d?.settings?.sound === true, 'sauvegarde écrite, version 2, réglages compris');
   check(Object.keys(d?.done || {}).length === 30 && d.done[1] === 2 && d.done[0] === 3, 'les 30 niveaux et leurs étoiles sont sauvegardés');
 
   await page.click('#bWinMenu');
