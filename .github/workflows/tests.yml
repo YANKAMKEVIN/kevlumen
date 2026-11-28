@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit:
-    name: Types et tests unitaires (rayons, 30 niveaux résolus, sauvegarde)
+  verif:
+    name: Types, tests unitaires (Vitest) et build
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -23,12 +23,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --no-audit --no-fund
-      - run: npm run types
-      - run: npm run unit
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
 
   navigateur:
-    name: Fumée (ordinateur, iPhone SE, Pixel 7) et partie complète
+    name: Fumée (ordinateur, iPhone SE, Pixel 7) et partie complète (Playwright)
+    needs: verif
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -36,7 +44,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --no-audit --no-fund
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
       - run: npx playwright install --with-deps chromium
       - run: npm run smoke
       - run: npm run partie
@@ -47,3 +60,31 @@ jobs:
           name: captures
           path: test-results/
           retention-days: 7
+
+  # Publication sur GitHub Pages, seulement depuis main et si tous les tests passent.
+  # Réglage à faire une fois : Settings > Pages > Source : « GitHub Actions ».
+  pages:
+    name: Publication GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [verif, navigateur]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+      - id: deploy
+        uses: actions/deploy-pages@v4
