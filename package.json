@@ -1,18 +1,31 @@
 {
   "name": "kevlumen",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node tools/serve.mjs",
-    "test": "npm run types && npm run unit && npm run smoke && npm run partie",
-    "types": "tsc -p .",
-    "unit": "node --test \"tests/unit/*.test.mjs\"",
-    "smoke": "node tests/smoke.mjs",
-    "partie": "node tests/partie.mjs"
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview --base /kevlumen/",
+    "typecheck": "tsc -p .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "smoke": "node tests/e2e/smoke.mjs",
+    "partie": "node tests/e2e/partie.mjs",
+    "e2e": "npm run smoke && npm run partie",
+    "check": "npm run typecheck && npm test && npm run build && npm run e2e"
   },
   "devDependencies": {
+    "@types/node": "22.18.0",
+    "@vitest/coverage-v8": "3.2.4",
     "playwright": "1.63.0",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vite": "7.1.12",
+    "vitest": "3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
