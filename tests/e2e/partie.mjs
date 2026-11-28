@@ -87,12 +87,17 @@ try {
   check(Object.keys(d?.done || {}).length === 30 && d.done[1] === 2 && d.done[0] === 3, 'les 30 niveaux et leurs étoiles sont sauvegardés');
 
   await page.click('#bWinMenu');
-  await page.click('#bSnd').catch(() => {});
+  // réglage du son : coupé en partie, gardé après rechargement
+  await page.locator('.lb').first().click();
+  await page.click('#bSnd');
+  check((await save())?.settings?.sound === false, 'son coupé : réglage sauvegardé');
+  await page.click('#bMenu');
   await page.reload();
   await page.click('#bLevels');
   const prog = await page.locator('#selProg').innerText();
   check(prog.startsWith('30 / 30') && prog.includes('89'), `après rechargement : progression retrouvée (« ${prog} »)`);
   check(await page.locator('.lb:disabled').count() === 0, 'après rechargement : tous les niveaux ouverts');
+  check(await page.locator('#bSnd').getAttribute('aria-pressed') === 'false', 'après rechargement : le son reste coupé');
   await page.screenshot({ path: `${OUT}/partie-3-niveaux.png` });
 
   await page.evaluate(() => { localStorage.clear(); localStorage.setItem('kevlumen_v1', JSON.stringify({ done: { 0: 3, 1: 2, 2: 1 }, snd: false })); });
@@ -108,7 +113,23 @@ try {
   check(await page.evaluate(k => localStorage.getItem(k + '.abimee'), KEY) === '{abîmée', 'sauvegarde abîmée mise de côté, le jeu démarre');
   check(await page.evaluate(() => __kl.L.name) === 'Première lueur', 'repart du niveau 1');
   check(errors.length === 0, `aucune erreur console${errors.length ? ' : ' + errors.slice(0, 3).join(' | ') : ''}`);
+  // onglet caché : la boucle d'affichage s'arrête, puis repart au retour
+  const setHidden = h => page.evaluate(h => { Object.defineProperty(document, 'hidden', { value: h, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); }, h);
+  await setHidden(true);
+  const t1 = await page.evaluate(() => __kl.T); await sleep(400);
+  check(!await page.evaluate(() => __kl.looping) && await page.evaluate(() => __kl.T) === t1, 'onglet caché : boucle en pause');
+  await setHidden(false); await sleep(300);
+  check(await page.evaluate(() => __kl.looping && __kl.T > 0), 'onglet visible : la boucle repart');
+
   await page.close();
+
+  // écran très dense (DPR 3) : le canvas est plafonné à 2 pixels physiques par pixel CSS
+  const dense = await browser.newContext({ viewport: { width: 400, height: 800 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true });
+  const dp = await dense.newPage();
+  await dp.goto(URL);
+  const dpr = await dp.evaluate(() => ({ dpr: __kl.DPR, w: document.getElementById('c').width, css: innerWidth }));
+  check(dpr.dpr === 2 && dpr.w === dpr.css * 2, `DPR plafonné à 2 sur un écran à 3 (canvas ${dpr.w} px pour ${dpr.css} px CSS)`);
+  await dense.close();
 
   // au doigt sur petit téléphone
   const ctx = await browser.newContext({ ...devices['iPhone SE'] });
