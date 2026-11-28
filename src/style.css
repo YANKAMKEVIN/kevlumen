@@ -60,3 +60,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webki
 /* Affiche peinte (Codex) derrière l'écran titre */
 #title{background:radial-gradient(ellipse at 50% 40%,#0a081800,#0a0818cc 75%),linear-gradient(#0a081855,#0a0818aa),url(./assets/art/titre.webp) center/cover no-repeat}
 .lb .st .off{opacity:.2}
+
+/* Finitions : entrée en cascade des niveaux, étoiles de victoire qui s'allument une à une */
+.lb{animation:lbIn .42s cubic-bezier(.2,.8,.3,1) backwards;animation-delay:calc(var(--k,0) * 16ms)}
+@keyframes lbIn{from{opacity:0;transform:translateY(8px) scale(.94)}}
+.chap h3{border-bottom:1px solid rgba(185,168,255,.12);padding-bottom:6px}
+#win:not(.hide) .stars i.on{animation:starIn .55s cubic-bezier(.2,1.4,.4,1) backwards}
+#win:not(.hide) .stars i.on:nth-child(2){animation-delay:.14s}
+#win:not(.hide) .stars i.on:nth-child(3){animation-delay:.28s}
+@keyframes starIn{from{opacity:0;transform:scale(.3) rotate(-30deg)}}
+.btn:focus-visible,.ib:focus-visible,.lb:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+}
